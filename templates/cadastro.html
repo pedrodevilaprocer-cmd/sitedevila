@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Devila Tech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- TEMA DARK DEVILA TECH --- */
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Garante altura total mesmo se o conteúdo crescer */
+        }
+
+        .login-card {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .logo-area h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        .logo-area span { color: var(--accent-blue); }
+        .logo-area p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        /* --- FORMULÁRIO --- */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            padding-right: 45px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        /* ÍCONE DO OLHO */
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+        .toggle-password:hover {
+            color: var(--accent-blue);
+        }
+
+        /* BOTÃO DE REGISTRAR */
+        .btn-login {
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: var(--bg-main);
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-login:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .register-link {
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .register-link a { color: var(--accent-blue); text-decoration: none; font-weight: 600; }
+
+        /* MENSAGENS DE ERRO */
+        .alert {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-area">
+            <h1>Devila<span>Tech</span></h1>
+            <p>Solicite seu acesso à plataforma IoT</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/registrar" method="POST">
+            <div class="form-group">
+                <label class="form-label">Nome Completo</label>
+                <input type="text" name="nome" class="form-input" placeholder="Seu nome" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">E-mail Corporativo</label>
+                <input type="email" name="email" class="form-input" placeholder="nome@empresa.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Defina uma Senha</label>
+                <div class="password-container">
+                    <input type="password" name="senha" id="senha" class="form-input" placeholder="Mínimo 6 caracteres" required>
+                    <button type="button" class="toggle-password" onclick="toggleSenha()">
+                        <svg id="icone-olho" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">Criar Minha Conta</button>
+        </form>
+
+        <div class="register-link">
+            Já possui acesso? <a href="/login">Fazer Login</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleSenha() {
+            var inputSenha = document.getElementById("senha");
+            var icone = document.getElementById("icone-olho");
+            
+            if (inputSenha.type === "password") {
+                inputSenha.type = "text";
+                icone.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                inputSenha.type = "password";
+                icone.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+    </script>
+
+</body>
+</html>

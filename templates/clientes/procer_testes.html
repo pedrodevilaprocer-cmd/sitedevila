@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Painel de Testes - Devila Tech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- VARIÁVEIS DE TEMA --- */
+        :root {
+            --bg-main: #0f172a;       
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;  
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;   
+            --accent-green: #22c55e;
+            --border-color: #334155;  
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+            overscroll-behavior: none;
+        }
+
+        body.modal-open { overflow: hidden; position: fixed; width: 100%; }
+
+        /* --- CABEÇALHO CORRIGIDO E MELHORADO --- */
+        .header-painel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            margin-bottom: 25px; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        
+        .brand-area { display: flex; align-items: center; justify-content: space-between; }
+        
+        /* Link no logo para voltar ao Dashboard */
+        .brand-link { text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .brand-title { font-size: 22px; font-weight: 800; margin: 0; color: #ffffff; }
+        .brand-tech { color: var(--accent-blue); }
+        
+        .user-info-area { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background-color: rgba(255,255,255,0.05); 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            font-size: 14px; 
+        }
+
+        /* Botões do Cabeçalho */
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        
+        .btn-back { 
+            color: var(--text-secondary); 
+            text-decoration: none; 
+            font-weight: 500; 
+            font-size: 13px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-back:hover { color: white; }
+
+        .btn-logout { 
+            color: var(--accent-blue); 
+            text-decoration: none; 
+            font-weight: 600; 
+            border: 1px solid var(--accent-blue);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .btn-logout:hover { background-color: var(--accent-blue); color: var(--bg-main); }
+        
+        /* --- ESTILOS DOS CARDS (MANTIDOS) --- */
+        .devila-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .card-top { display: flex; justify-content: space-between; align-items: center; }
+        .op-badge { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--text-secondary); }
+        .op-number-highlight { color: var(--accent-blue); font-weight: 800; font-size: 18px; }
+        .deadline-text { font-size: 13px; color: var(--text-secondary); text-align: right; }
+        .deadline-date { color: var(--text-primary); font-weight: 700; display: block; }
+        .main-item-desc { font-size: 22px; font-weight: 800; color: white; line-height: 1.3; margin: 5px 0; }
+        .client-name { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+        .operation-bar { background: linear-gradient(90deg, rgba(56, 189, 248, 0.15) 0%, rgba(30, 41, 59, 0.3) 100%); border-left: 4px solid var(--accent-blue); padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .op-label-small { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); display: block; margin-bottom: 2px; }
+        .op-value-large { font-size: 15px; font-weight: 700; color: var(--accent-blue); }
+        .balance-value { font-size: 15px; font-weight: 700; color: white; }
+        .card-footer-action { display: flex; flex-direction: column; gap: 12px; margin-top: 5px; }
+        .status-line { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .status-indicator { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--accent-green); }
+        .item-id-info { color: var(--text-secondary); }
+        .btn-start-large { background-color: var(--accent-green); color: var(--bg-main); border: none; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: background-color 0.2s, transform 0.1s; width: 100%; text-transform: uppercase; }
+        .btn-start-large:active { transform: scale(0.98); background-color: #16a34a; }
+        .obs-tag { font-size: 12px; color: var(--text-secondary); font-style: italic; background: rgba(255,255,255,0.03); padding: 5px 10px; border-radius: 4px; align-self: flex-start; }
+
+        /* --- MODAL CSS --- */
+        #photoModal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--bg-main); flex-direction: column; }
+        .modal-header { padding: 15px 20px; background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+        .btn-close-modal { background: none; border: none; color: var(--text-secondary); font-size: 28px; cursor: pointer; padding: 0 10px; }
+        .modal-body { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
+        .progress-wrapper { width: 100%; margin-bottom: 25px; }
+        .progress-text { text-align: center; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+        .progress-bg { height: 6px; background-color: var(--border-color); border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--accent-blue); width: 25%; transition: width 0.3s ease; }
+        .step-info { text-align: center; margin-bottom: 30px; }
+        .step-info h3 { font-size: 24px; margin: 0 0 10px 0; color: var(--accent-blue); }
+        .step-info p { font-size: 16px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+        .camera-preview-box { width: 100%; max-width: 350px; aspect-ratio: 3/4; background-color: rgba(255,255,255,0.05); border: 2px dashed var(--border-color); border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; margin-bottom: 30px; cursor: pointer; }
+        #previewImg { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .modal-footer { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        .btn-action { width: 100%; padding: 18px; border-radius: 8px; font-size: 18px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-cam { background-color: var(--accent-blue); color: var(--bg-main); }
+        .btn-next { background-color: var(--accent-green); color: var(--bg-main); display: none; }
+        .btn-retry { background: transparent; border: 1px solid var(--text-secondary); color: var(--text-secondary); display: none; font-size: 16px; padding: 12px; }
+        #loaderOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10001; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header-painel { flex-direction: column; gap: 20px; }
+            .user-info-area { width: 100%; display: flex; justify-content: space-between; align-items: center; background-color: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; }
+            .btn-apontar { width: 100%; justify-content: center; padding: 15px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-painel">
+        <div class="brand-area">
+            <a href="/cliente/procer" class="brand-link">
+                <h1 class="brand-title">Devila<span class="brand-tech">Tech</span></h1>
+                <img src="{{ url_for('static', filename='images/logo.png') }}?v=3" alt="Logo" style="height: 30px; width: auto; opacity: 0.8;">
+            </a>
+        </div>
+        <div class="user-info-area">
+            <div><span style="color: var(--text-secondary);">Op:</span> <strong>{{ session['nome'] }}</strong></div>
+            
+            <div class="header-actions">
+                <a href="/cliente/procer" class="btn-back">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Menu
+                </a>
+
+                <a href="/logout" class="btn-logout">Sair</a>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <h2 style="margin-bottom: 20px; font-weight: 700; font-size: 18px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Fila de Testes</h2>
+        
+        {% for op in ops %}
+        <div class="devila-card">
+            <div class="card-top">
+                <div class="op-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    OP <span class="op-number-highlight">{{ op.numero }}</span>
+                </div>
+                <div class="deadline-text">
+                    Previsão: <span class="deadline-date">{{ op.previsao }}</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="client-name">{{ op.cliente }}</div>
+                <div class="main-item-desc">{{ op.item_desc }}</div>
+                {% if op.obs %}
+                <div class="obs-tag">Obs: {{ op.obs }}</div>
+                {% endif %}
+            </div>
+
+            <div class="operation-bar">
+                <div>
+                    <span class="op-label-small">Operação Atual</span>
+                    <span class="op-value-large">{{ op.operacao }}</span>
+                </div>
+                <div style="text-align: right;">
+                    <span class="op-label-small">Saldo a Testar</span>
+                    <span class="balance-value">{{ op.saldo }} un.</span>
+                </div>
+            </div>
+
+            <div class="card-footer-action">
+                <div class="status-line">
+                    <div class="status-indicator">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" color="var(--accent-green)"><circle cx="12" cy="12" r="10"></circle></svg>
+                        Aguardando Início
+                    </div>
+                    <div class="item-id-info">ID: {{ op.item_id }}</div>
+                </div>
+
+                <button class="btn-start-large" onclick="startWizard('{{ op.numero }}', '{{ op.ov }}', '{{ op.item_desc }}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    Iniciar Teste
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </main>
+
+    <div id="photoModal">
+        <div class="modal-header">
+            <div class="modal-title">OP: <span id="wizOpNum"></span> | OV: <span id="wizOvNum"></span></div>
+            <button class="btn-close-modal" onclick="closeWizard()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="progress-wrapper">
+                <div class="progress-text">Etapa <span id="stepCount">1</span> de 4</div>
+                <div class="progress-bg"><div class="progress-fill" id="stepBar"></div></div>
+            </div>
+            <div class="step-info">
+                <h3 id="stepTitle">...</h3>
+                <p id="stepDesc">...</p>
+            </div>
+            <div class="camera-preview-box" onclick="triggerCam()">
+                <div class="camera-icon-placeholder" id="placeholderIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <span>Toque para Fotografar</span>
+                </div>
+                <img id="previewImg" alt="Preview">
+            </div>
+            <div class="modal-footer">
+                <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="fileCaptured(event)">
+                <button id="btnCam" class="btn-action btn-cam" onclick="triggerCam()">Abrir Câmera</button>
+                <button id="btnNext" class="btn-action btn-next" onclick="nextStep()">Confirmar</button>
+                <button id="btnRetry" class="btn-action btn-retry" onclick="triggerCam()">Tirar Outra Foto</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loaderOverlay">
+        <div class="spinner"></div>
+        <div style="color:white; font-weight:bold;">Salvando na pasta da OV...</div>
+    </div>
+
+    <script>
+        const steps = [
+            { title: "1. Porta do Painel", desc: "Feche o painel e tire uma foto frontal completa mostrando que está trancado." },
+            { title: "2. Parte Interna", desc: "Abra a porta e tire uma foto ampla dos componentes internos." },
+            { title: "3. Plaqueta", desc: "Aproxime e tire uma foto legível da plaqueta de identificação." },
+            { title: "4. Foto do Conjunto", desc: "Afaste-se e tire uma foto mostrando o painel instalado no ambiente." }
+        ];
+
+        let currentStep = 0;
+        let photos = [];
+        let currentOp = '';
+        let currentOv = '';
+        let currentItemDesc = '';
+
+        const modal = document.getElementById('photoModal');
+        const camInput = document.getElementById('camInput');
+        const previewImg = document.getElementById('previewImg');
+        const placeholder = document.getElementById('placeholderIcon');
+        const loader = document.getElementById('loaderOverlay');
+        const btnNext = document.getElementById('btnNext');
+
+        function startWizard(opNum, ovNum, itemDesc) {
+            currentOp = opNum;
+            currentOv = ovNum;
+            currentItemDesc = itemDesc;
+            document.getElementById('wizOpNum').innerText = opNum;
+            document.getElementById('wizOvNum').innerText = ovNum;
+            currentStep = 0;
+            photos = [];
+            updateUI();
+            modal.style.display = 'flex';
+            document.body.classList.add('modal-open');
+        }
+
+        function closeWizard() {
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        function triggerCam() { camInput.click(); }
+
+        function compressImage(file, quality = 0.7, maxWidth = 1200) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob((blob) => {
+                            if (!blob) return reject("Erro compressão");
+                            resolve(blob);
+                        }, 'image/jpeg', quality);
+                    };
+                };
+                reader.onerror = (e) => reject(e);
+            });
+        }
+
+        async function fileCaptured(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const btnCam = document.getElementById('btnCam');
+                const textoOriginal = btnCam.innerText;
+                btnCam.innerText = "Processando...";
+                try {
+                    previewImg.src = URL.createObjectURL(file);
+                    placeholder.style.display = 'none';
+                    previewImg.style.display = 'block';
+                    const compressedBlob = await compressImage(file);
+                    photos[currentStep] = compressedBlob;
+                    btnCam.style.display = 'none';
+                    document.getElementById('btnNext').style.display = 'flex';
+                    document.getElementById('btnRetry').style.display = 'flex';
+                } catch (e) {
+                    alert("Erro foto: " + e);
+                } finally {
+                    btnCam.innerText = textoOriginal;
+                }
+            }
+            camInput.value = '';
+        }
+
+        function updateUI() {
+            const s = steps[currentStep];
+            document.getElementById('stepTitle').innerText = s.title;
+            document.getElementById('stepDesc').innerText = s.desc;
+            document.getElementById('stepCount').innerText = currentStep + 1;
+            document.getElementById('stepBar').style.width = (((currentStep + 1) / steps.length) * 100) + '%';
+            previewImg.style.display = 'none';
+            placeholder.style.display = 'flex';
+            document.getElementById('btnCam').style.display = 'flex';
+            document.getElementById('btnNext').style.display = 'none';
+            document.getElementById('btnRetry').style.display = 'none';
+            
+            if (currentStep === steps.length - 1) {
+                btnNext.innerText = "Finalizar e Enviar 🚀";
+                btnNext.style.backgroundColor = "#22c55e"; 
+            } else {
+                btnNext.innerText = "Confirmar e Avançar";
+                btnNext.style.backgroundColor = "#38bdf8"; 
+                btnNext.style.color = "#0f172a";
+            }
+        }
+
+        function nextStep() {
+            if (!photos[currentStep]) return alert('Tire a foto primeiro!');
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateUI();
+            } else {
+                uploadData();
+            }
+        }
+
+        function uploadData() {
+            loader.style.display = 'flex';
+            let formData = new FormData();
+            formData.append('op_numero', currentOp);
+            formData.append('ov_numero', currentOv);
+            formData.append('item_desc', currentItemDesc);
+            photos.forEach((blob, index) => {
+                formData.append(`foto_${index}`, blob, `foto_${index}.jpg`);
+            });
+
+            fetch('/upload_evidencias', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                loader.style.display = 'none';
+                if (data.success) {
+                    alert("✅ Sucesso! " + data.message);
+                    closeWizard();
+                    location.reload();
+                } else {
+                    alert("❌ Erro: " + data.message);
+                }
+            })
+            .catch(e => {
+                loader.style.display = 'none';
+                alert("Erro conexão: " + e);
+            });
+        }
+    </script>
+</body>
+</html>

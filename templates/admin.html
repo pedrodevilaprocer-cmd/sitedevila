@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Devila Tech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);
+        }
+        .logo { font-size: 24px; font-weight: 800; color: white; }
+        .logo span { color: var(--accent-blue); }
+        .btn-logout { 
+            color: var(--accent-blue); text-decoration: none; 
+            border: 1px solid var(--accent-blue); padding: 8px 16px; border-radius: 6px; 
+        }
+
+        /* TABELA */
+        .user-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .user-info h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .user-info p { margin: 0; color: var(--text-secondary); font-size: 14px; }
+        .user-meta { display: flex; gap: 10px; margin-top: 5px; font-size: 12px; }
+        .tag { background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; }
+
+        /* FORMULÁRIO DENTRO DO CARD */
+        .admin-form {
+            display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+        }
+
+        select, input {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            outline: none;
+        }
+        select:focus, input:focus { border-color: var(--accent-blue); }
+
+        .btn-save {
+            background-color: var(--accent-green); color: #0f172a; border: none;
+            padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer;
+        }
+        .btn-delete {
+            background-color: transparent; color: var(--accent-red); border: 1px solid var(--accent-red);
+            padding: 10px; border-radius: 6px; cursor: pointer;
+        }
+        .btn-delete:hover { background-color: var(--accent-red); color: white; }
+
+        /* MENSAGENS FLASH */
+        .flash-msg {
+            background: rgba(34, 197, 94, 0.2); color: var(--accent-green);
+            padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">Devila<span>Tech</span> <small style="font-size:12px; color:#666;">ADMIN</small></div>
+            <a href="/logout" class="btn-logout">Sair</a>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-msg">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2 style="margin-bottom: 20px;">Gerenciamento de Usuários</h2>
+
+        {% for user in users %}
+        <div class="user-card">
+            <div class="user-info">
+                <h3>{{ user.nome }}</h3>
+                <p>{{ user.email }}</p>
+                <div class="user-meta">
+                    <span class="tag">Empresa Atual: <strong>{{ user.empresa }}</strong></span>
+                    <span class="tag">Cargo: {{ user.cargo }}</span>
+                </div>
+            </div>
+
+            <form action="/admin" method="POST" class="admin-form">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                
+                <select name="nova_empresa" required>
+                    <option value="" disabled selected>Selecionar Empresa...</option>
+                    
+                    <option value="procer" {% if user.empresa == 'procer' %}selected{% endif %}>
+                        🏭 Procer Automação
+                    </option>
+                    
+                    <option value="carabeli" {% if user.empresa == 'carabeli' %}selected{% endif %}>
+                        🦷 Consultório Carabeli
+                    </option>
+                    
+                    <option value="admin" {% if user.empresa == 'admin' %}selected{% endif %}>
+                        🔐 Administrador Master
+                    </option>
+                    
+                    <option value="Pendente" {% if user.empresa == 'Pendente' %}selected{% endif %}>
+                        🚫 Bloqueado / Pendente
+                    </option>
+                </select>
+
+                <input type="text" name="novo_cargo" value="{{ user.cargo }}" placeholder="Cargo (Ex: PCP, Dentista)">
+
+                <button type="submit" class="btn-save">Salvar</button>
+            </form>
+
+            <form action="/admin/excluir" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <button type="submit" class="btn-delete">🗑</button>
+            </form>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</body>
+</html>
