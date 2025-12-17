@@ -1,3 +1,4 @@
+import os
 import threading
 import warnings
 from flask import Flask
@@ -9,7 +10,12 @@ from services.reminder_service import verificar_lembretes_automaticos
 
 warnings.filterwarnings("ignore")
 
-app = Flask(__name__, template_folder='templates', static_folder='static')
+# Define paths explicitly to avoid issues on Windows/different CWD
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.secret_key = SECRET_KEY
 
 # Register Blueprints
