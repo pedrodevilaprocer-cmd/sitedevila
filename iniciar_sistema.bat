@@ -10,20 +10,40 @@ echo      INICIANDO SISTEMA DEVILA TECH
 echo ==========================================
 echo.
 
-:: 2. Tenta ativar ambiente virtual (se voce usa venv ou .venv)
+:: 2. Verifica se Python está instalado
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERRO] Python nao encontrado! Instale o Python e marque "Add to PATH".
+    pause
+    exit
+)
+
+:: 3. Tenta ativar ambiente virtual (se voce usa venv ou .venv)
 if exist venv\Scripts\activate (
     echo [INFO] Ativando ambiente virtual 'venv'...
     call venv\Scripts\activate
 ) else if exist .venv\Scripts\activate (
     echo [INFO] Ativando ambiente virtual '.venv'...
     call .venv\Scripts\activate
+) else (
+    echo [AVISO] Nenhum ambiente virtual encontrado. Rodando no Python global.
 )
 
-:: 3. Roda o aplicativo
-echo [INFO] Rodando app.py...
+:: 4. Instala dependencias
+echo [INFO] Verificando dependencias...
+pip install -r requirements.txt
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao instalar dependencias.
+    pause
+    exit
+)
+echo.
+
+:: 5. Roda o aplicativo
+echo [INFO] Iniciando servidor...
 python app.py
 
-:: 4. Se der erro, nao fecha a janela na hora
+:: 6. Se der erro, nao fecha a janela na hora
 echo.
 echo ==========================================
 echo O SERVIDOR PAROU.

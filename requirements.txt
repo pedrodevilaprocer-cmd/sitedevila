@@ -1,0 +1,6 @@
+flask
+werkzeug
+waitress
+python-dotenv
+google-generativeai
+requests
